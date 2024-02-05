@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite App</title>
+  </head>
+  <body>
+    <script src="./jquery.js"></script>
+    <script src="./Parser_5_1.js"></script>
+    <script src="./Parser_5_4.js"></script>
+    <script src="./viz-standalone.js"></script>
+    <script src="./graph.js"></script>
+    <div>
+      <fieldset style="max-width: 20%;">
+        <legend>Select an expression or enter your own: </legend>
+        <div>
+          <select style="mex-width: 80%;" id="exprnum" name="ex-number"></select>
+        </div>
+        <br />
+        <div>
+          SDD
+        </div>
+        <div>
+          <select style="max-width: 80%;" id="sdd" name="sdd"></select>
+        </div>
+      </fieldset>
+    </div>
+    <div>
+      <input type="text" value="(3+4)*(5+6)" id="data" />
+        <button id="go">Go</button>
+      <div id="graph"></div>
+    </div>
+    <script>
+      let exprList = ["(3+4)*(5+6)",
+                      "1*2*3*(4+5)",
+                      "(9+8*(7+6)+5)*4"];
+      let sddList = ["5.1", "5.4"];
+      // Fill the select element for the expressions.
+      let exprListElement = document.getElementById("exprnum");
+      for (let element of exprList) {
+        let opt = document.createElement('option');
+        opt.value = element;
+        opt.innerHTML = element;
+        exprListElement.appendChild(opt);
+      }
+      let sddListElement = document.getElementById('sdd');
+      for (let element of sddList) {
+        let opt = document.createElement('option');
+        opt.value = element;
+        opt.innerHTML = element;
+        sddListElement.appendChild(opt);
+      }
+      // Using good old jquery... when document is ready.
+      $(document).ready(function() {
+        let inputArea = document.getElementById("data");
+        exprListElement.addEventListener('change', function () {
+          inputArea.value = $("#exprnum").val().toString();
+        });
+        $("#go").click(function() {
+          try {
+            $("#graph").empty();
+            // Make a new parser.
+            let p = sddListElement.value === "5.1" ? new Parser_5_1.Parser() : new Parser_5_4.Parser();
+            // If there were parsing errors, we get back a parse tree with javascript objects
+            // as nodes. see the parser.jison for its structure.
+            let root = p.parse($("#data").val());
+            // Annotate the parse tree with attributes.
+            if (sddListElement.value === "5.4") {
+              annotateTree(root);
+            }
+            // Build the dot file.
+            if (sddListElement.value === "5.1") {
+              Graph5dot1.build(root);
+            } else {
+              Graph5dot4.build(root);
+            }
+            // Create an SVG for the graph.
+            Viz.instance().then(function(viz) {
+              let svg = sddListElement.value === "5.1" ?
+                          viz.renderSVGElement(Graph5dot1.dotString()) :
+                          viz.renderSVGElement(Graph5dot4.dotString());
+              document.getElementById("graph").appendChild(svg);
+            });
+          } catch (e) {
+            alert(e);
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

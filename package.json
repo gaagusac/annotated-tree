@@ -1,0 +1,17 @@
+{
+  "name": "annotated-tree",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "jison5dot1": "jison parser5-1.jison -o Parser_5_1.js",
+    "jison5dot4": "jison parser_5_4.jison -o Parser_5_4.js",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "jison": "^0.4.18",
+    "vite": "^5.0.8"
+  }
+}
