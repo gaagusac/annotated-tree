@@ -30,6 +30,7 @@
     <div>
       <input type="text" value="(3+4)*(5+6)" id="data" />
         <button id="go">Go</button>
+      <div id="title"></div>
       <div id="graph"></div>
     </div>
     <script>
@@ -61,6 +62,7 @@
         $("#go").click(function() {
           try {
             $("#graph").empty();
+            $("#title").empty();
             // Make a new parser.
             let p = sddListElement.value === "5.1" ? new Parser_5_1.Parser() : new Parser_5_4.Parser();
             // If there were parsing errors, we get back a parse tree with javascript objects
@@ -81,6 +83,7 @@
               let svg = sddListElement.value === "5.1" ?
                           viz.renderSVGElement(Graph5dot1.dotString()) :
                           viz.renderSVGElement(Graph5dot4.dotString());
+              document.getElementById("title").innerHTML = `<h1>${inputArea.value}</h1>`;
               document.getElementById("graph").appendChild(svg);
             });
           } catch (e) {
